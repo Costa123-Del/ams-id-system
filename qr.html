@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Verification | A.M SANUSI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-shell">
+  <main class="page-content qr-page">
+    <section class="page-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">QR Verification</p>
+          <h1>Employee Profile Check</h1>
+        </div>
+      </div>
+
+      <div id="qr-status" class="qr-status card">
+        <p>Scanning employee data...</p>
+      </div>
+
+      <div id="qr-details" class="qr-details hidden card"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://your-project.supabase.co';
+    const SUPABASE_KEY = 'YOUR_ANON_KEY';
+    const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function formatDate(value) {
+      if (!value) return '--';
+      const date = new Date(value);
+      return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function isExpired(expiryDate) {
+      const expiry = new Date(expiryDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return expiry < today;
+    }
+
+    async function loadEmployee() {
+      const params = new URLSearchParams(window.location.search);
+      const employeeId = params.get('employeeId');
+      const statusEl = document.getElementById('qr-status');
+      const detailsEl = document.getElementById('qr-details');
+
+      if (!employeeId) {
+        statusEl.innerHTML = '<p class="error-text">No employee identifier found in this QR code.</p>';
+        return;
+      }
+
+      const { data, error } = await supabase.from('employees').select('*').eq('employee_id', employeeId).single();
+      if (error || !data) {
+        statusEl.innerHTML = '<p class="error-text">Employee not found. Please ensure the code is valid.</p>';
+        return;
+      }
+
+      const active = isExpired(data.expiry_date) ? 'Expired' : 'Active';
+      statusEl.innerHTML = `
+        <div class="qr-status-block ${active.toLowerCase()}">
+          <span>Status</span>
+          <strong>${active}</strong>
+        </div>
+      `;
+      detailsEl.classList.remove('hidden');
+      detailsEl.innerHTML = `
+        <div class="qr-details-grid">
+          <div><strong>${data.full_name}</strong><span>${data.position}</span></div>
+          <div><strong>${data.employee_id}</strong><span>ID Number</span></div>
+          <div><strong>${data.department}</strong><span>Department</span></div>
+          <div><strong>${data.phone_number}</strong><span>Phone</span></div>
+          <div><strong>${formatDate(data.date_issued)}</strong><span>Issue Date</span></div>
+          <div><strong>${formatDate(data.expiry_date)}</strong><span>Expiry Date</span></div>
+        </div>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', loadEmployee);
+  </script>
+</body>
+</html>

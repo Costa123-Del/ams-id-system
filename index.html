@@ -1,16 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>A.M SANUSI ID System</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A.M SANUSI GENERAL ELECTRICALS | Employee ID System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>A.M SANUSI GENERAL ELECTRICALS</h1>
-    <h2>Employee ID Card Management System</h2>
+<body class="page-shell">
+  <main class="page-content">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">A.M SANUSI GENERAL ELECTRICALS</p>
+        <h1>Employee ID Card Management</h1>
+        <p class="lead">Manage ID issuance, employee profiles, and QR verification with a modern blue and gold workflow.</p>
+      </div>
+      <div>
+        <button id="show-register-btn" class="primary-btn">Register Employee</button>
+      </div>
+    </header>
 
-    <button>Add Employee</button>
-    <button>View Employees</button>
-    <button>Generate ID Card</button>
+    <section class="stats-grid">
+      <article class="stat-card blue">
+        <span>Total Employees</span>
+        <strong id="total-employees">0</strong>
+      </article>
+      <article class="stat-card gold">
+        <span>Active Cards</span>
+        <strong id="active-cards">0</strong>
+      </article>
+      <article class="stat-card slate">
+        <span>Expired Cards</span>
+        <strong id="expired-cards">0</strong>
+      </article>
+    </section>
 
-    <p>System under development...</p>
+    <section class="workspace-panel">
+      <div class="panel-left">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Employee Directory</p>
+              <h2>Search & manage employee records</h2>
+            </div>
+          </div>
+          <div class="search-row">
+            <label class="input-group">
+              <span>Search employees</span>
+              <input id="search-input" type="search" placeholder="Search by name, ID, position or department">
+            </label>
+          </div>
+          <div id="directory-list" class="directory-list"></div>
+        </div>
+      </div>
+
+      <div class="panel-right">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">ID Card Preview</p>
+              <h2>Professional badge design</h2>
+            </div>
+          </div>
+          <div id="id-card-preview" class="preview-panel"></div>
+        </div>
+        <div class="panel-card help-card">
+          <h3>Next steps</h3>
+          <p>Register employees to generate ID cards and store details in Supabase. Use the QR verification page to confirm active or expired status from any scanned ID.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="app-status" class="app-status"></div>
+  </main>
+
+  <div id="employee-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Employee Registration</p>
+          <h2 id="modal-title">Register New Employee</h2>
+        </div>
+        <button type="button" data-modal-close class="icon-btn">×</button>
+      </div>
+      <form id="employee-form" class="form-grid">
+        <label class="input-group">
+          <span>Full Name</span>
+          <input id="full-name" type="text" required>
+        </label>
+        <label class="input-group">
+          <span>Employee ID</span>
+          <input id="employee-id" type="text" readonly>
+        </label>
+        <label class="input-group">
+          <span>Position</span>
+          <input id="position" type="text" required>
+        </label>
+        <label class="input-group">
+          <span>Department</span>
+          <input id="department" type="text" required>
+        </label>
+        <label class="input-group">
+          <span>Phone Number</span>
+          <input id="phone-number" type="tel" required>
+        </label>
+        <label class="input-group">
+          <span>Date Issued</span>
+          <input id="date-issued" type="date" required>
+        </label>
+        <label class="input-group">
+          <span>Expiry Date</span>
+          <input id="expiry-date" type="date" required>
+        </label>
+        <label class="input-group file-input-group">
+          <span>Passport Photo Upload</span>
+          <input id="passport-photo" type="file" accept="image/*">
+        </label>
+        <div class="modal-actions">
+          <button type="button" data-modal-close class="secondary-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="details-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel modal-panel--small">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Employee details</p>
+          <h2 id="details-title"></h2>
+        </div>
+        <button type="button" data-modal-close class="icon-btn">×</button>
+      </div>
+      <div id="details-content" class="details-content"></div>
+      <div class="details-qr" id="details-qr"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
